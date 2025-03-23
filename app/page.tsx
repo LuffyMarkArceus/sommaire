@@ -1,5 +1,3 @@
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import HeroSection from "@/components/home/HeroSection";
 import DemoSection from "@/components/home/DemoSection";
 import HowItWorks from "@/components/home/HowItWorks";

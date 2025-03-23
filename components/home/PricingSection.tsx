@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowRight, CheckIcon } from "lucide-react";
 
@@ -53,10 +52,10 @@ const PricingCard = ({
   priceId,
 }: PricingType) => {
   return (
-    <div className="relative w-full max-w-lg hover:bg-rose-100 hover:transition-all  duration-200">
+    <div className="relative w-full max-w-lg hover:rotate-2 hover:transition-all duration-300">
       <div
         className={cn(
-          "relative flex flex-col h-full gap-4 lg:gap-8 z-10 p-8 border-[1px] border-gray-500/20 rounded-2xl",
+          "relative flex flex-col h-full gap-4 lg:gap-8 z-10 p-8 border-[1px] border-gray-500/20 rounded-2xl hover:bg-rose-50",
           id === "pro" && "border-rose-500 gap-5 border-2"
         )}
       >
@@ -102,7 +101,7 @@ const PricingCard = ({
 
 export default function PricingSection() {
   return (
-    <section className="relative overflow-hidden" id="pricing">
+    <section className="relative overflow-hidden pb-4" id="pricing">
       <div className="py-12 lg:py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-12">
         <div className="flex items-center justify-center w-full pb-12">
           <h2 className="uppercase font-bold text-xl mb-8 text-rose-500">
@@ -110,7 +109,7 @@ export default function PricingSection() {
           </h2>
         </div>
       </div>
-      <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretrch gap-8 pb-5">
+      <div className="relative flex justify-center flex-col lg:flex-row items-center lg:items-stretch gap-8">
         {plans.map((plan) => (
           <PricingCard key={plan.id} {...plan} />
         ))}
