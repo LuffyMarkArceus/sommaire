@@ -3,6 +3,8 @@ const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+import { SUMMARY_SYSTEM_PROMPT } from "@/utils/prompts";
+
 export async function generateSummaryFromOpenAI(pdfText: string) {
   try {
     const completion = await client.chat.completions.create({
@@ -10,11 +12,11 @@ export async function generateSummaryFromOpenAI(pdfText: string) {
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant.",
+          content: SUMMARY_SYSTEM_PROMPT,
         },
         {
           role: "user",
-          content: "Are semicolons optional in JavaScript?",
+          content: `Transform this document into an engaging easy-to-reaed summary with contextually relevant emojis and proper markdown formatting:\n\n${pdfText}`,
         },
       ],
       temperature: 0.5,
@@ -25,7 +27,7 @@ export async function generateSummaryFromOpenAI(pdfText: string) {
     if (error?.status === 429) {
       console.error("Rate limit exceeded. Please try again later.");
       console.error(error);
-      throw new Error("RATE_LIMIT_EXCEEDED");
+      // throw new Error("RATE_LIMIT_EXCEEDED");
     }
     console.error("Error generating summary:", error);
     throw error;
