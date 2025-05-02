@@ -6,6 +6,7 @@ import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { generateSummaryFromOpenAI } from "@/lib/openai";
 import { formatFilenameAsTitle } from "@/utils/format-uitls";
 import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
 interface PdfSummaryType {
   userId?: string;
@@ -122,7 +123,7 @@ async function savedPdfSummary({
 }: PdfSummaryType) {
   try {
     const sql = await getDbConnection();
-    await sql`
+    const result = await sql`
       INSERT INTO pdf_summaries (
         user_id, 
         original_file_url, 
@@ -135,11 +136,11 @@ async function savedPdfSummary({
        ${summary},
        ${title},
        ${fileName}
-      )`;
+      ) RETURNING id`;
+    console.log("SQL QUERY RESULT: \n", result);
 
     return {
-      userId,
-      summary: "This is a mock summary of the PDF.",
+      id: result[0].id,
     };
   } catch (error) {
     console.error("Error saving PDF summary:", error);
@@ -148,7 +149,7 @@ async function savedPdfSummary({
 }
 
 export async function storePdfSummaryAction({
-  userId,
+  userId, // Optional, can be derived from auth context
   fileUrl,
   summary,
   title,
@@ -163,7 +164,7 @@ export async function storePdfSummaryAction({
         message: "User not found",
       };
     }
-    savedSummary = savedPdfSummary({
+    savedSummary = await savedPdfSummary({
       userId,
       fileUrl,
       summary,
@@ -177,10 +178,6 @@ export async function storePdfSummaryAction({
         message: "Failed to save PDF summary, Please try again...",
       };
     }
-    return {
-      success: true,
-      message: "PDF summary stored successfully",
-    };
   } catch (error) {
     console.error("Error storing PDF summary:", error);
     return {
@@ -189,4 +186,15 @@ export async function storePdfSummaryAction({
         error instanceof Error ? error.message : "Error saving PDF summary",
     };
   }
+
+  // Revalidate for Cache
+  revalidatePath(`/summaries/${savedSummary.id}`);
+
+  return {
+    success: true,
+    message: "PDF summary stored successfully",
+    data: {
+      id: savedSummary.id,
+    },
+  };
 }
