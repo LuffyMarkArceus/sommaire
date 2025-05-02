@@ -1,8 +1,19 @@
 "use server";
 
+import { getDbConnection } from "@/lib/db";
 import generateSummaryFromGemini from "@/lib/gemini";
 import { fetchAndExtractPdfText } from "@/lib/langchain";
 import { generateSummaryFromOpenAI } from "@/lib/openai";
+import { formatFilenameAsTitle } from "@/utils/format-uitls";
+import { auth } from "@clerk/nextjs/server";
+
+interface PdfSummaryType {
+  userId?: string;
+  fileUrl: string;
+  summary: string;
+  title: string;
+  fileName: string;
+}
 
 export async function generatePdfSummary(
   uploadResponse: [
@@ -82,12 +93,14 @@ export async function generatePdfSummary(
         };
       }
     }
+
+    const fname = formatFilenameAsTitle(fileName);
     return {
       success: true,
       message: "Summary generated successfully",
       data: {
         userId,
-        fileName,
+        fname,
         summary,
       },
     };
@@ -96,6 +109,84 @@ export async function generatePdfSummary(
       success: false,
       message: `File Upload Failed - ${error}`,
       data: null,
+    };
+  }
+}
+
+async function savedPdfSummary({
+  userId,
+  fileUrl,
+  summary,
+  title,
+  fileName,
+}: PdfSummaryType) {
+  try {
+    const sql = await getDbConnection();
+    await sql`
+      INSERT INTO pdf_summaries (
+        user_id, 
+        original_file_url, 
+        summary_text, 
+        title, 
+        file_name
+      ) VALUES (
+       ${userId}, 
+       ${fileUrl},
+       ${summary},
+       ${title},
+       ${fileName}
+      )`;
+
+    return {
+      userId,
+      summary: "This is a mock summary of the PDF.",
+    };
+  } catch (error) {
+    console.error("Error saving PDF summary:", error);
+    return null;
+  }
+}
+
+export async function storePdfSummaryAction({
+  userId,
+  fileUrl,
+  summary,
+  title,
+  fileName,
+}: PdfSummaryType) {
+  let savedSummary = null;
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+    savedSummary = savedPdfSummary({
+      userId,
+      fileUrl,
+      summary,
+      title,
+      fileName,
+    });
+    // This should be the summary you want to save, e.g., from generatePdfSummary
+    if (!savedSummary) {
+      return {
+        success: false,
+        message: "Failed to save PDF summary, Please try again...",
+      };
+    }
+    return {
+      success: true,
+      message: "PDF summary stored successfully",
+    };
+  } catch (error) {
+    console.error("Error storing PDF summary:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Error saving PDF summary",
     };
   }
 }
