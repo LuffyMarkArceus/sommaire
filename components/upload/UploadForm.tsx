@@ -124,15 +124,6 @@ export default function UploadForm() {
         ref={formRef}
         onSubmit={handleSubmit}
       />
-      {summary && (
-        <div className="mt-6 p-4 bg-gray-100 rounded-md shadow-sm">
-          {summary.split("\n").map((line, index) => (
-            <p key={index} className="mb-2 last:mb-0 whitespace-pre-wrap">
-              {line}
-            </p>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

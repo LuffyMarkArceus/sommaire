@@ -37,11 +37,18 @@ Additional key overview points (if needed)
 # Bottom Line
 • The most important takeaway
 
-Note: Every single point MUST start with a bullet point (•) and end with an emoji 
+Note: Every single point MUST start and end with an emoji 
 that matches the content. Do not use numbers for listing. 
 Follow this pattern only, Never deviate from the format specified. 
 The emoji should be relevant to the point being made, 
 enhancing the visual appeal without distracting from the message.
 Always maintain this exact format for ALL points in ALL sections
+
+For sections 'Documetn Details', 'Key Terms to know', 
+start the points with emojis as well. 
+You seeem to skip it for these sections.
+
+I am using the output from this prompt to create a summary for the document
+using nextjs, so please ensure the output is clean and formatted correctly.
 
 `;
