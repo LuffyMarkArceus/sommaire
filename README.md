@@ -1,3 +1,9 @@
+## About Sommaire
+
+Sommaire is an AI-powered summarizer designed to simplify document processing.
+Users can upload PDF files through a dedicated form, and the application generates concise story flashcards based on the content.
+This tool is ideal for quickly extracting key points from lengthy documents.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

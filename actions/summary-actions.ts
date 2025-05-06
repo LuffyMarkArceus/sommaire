@@ -19,6 +19,10 @@ export async function deleteSummaryAction({
     const result =
       await sql`DELETE FROM pdf_summaries WHERE id = ${summaryId} AND user_id = ${userId} RETURNING id`;
 
+    // TODO:
+    // Need to delete the original file from uploadthing as well,
+    // once data is deleted from table.
+
     if (result.length > 0) {
       revalidatePath("/dashboard");
       return { success: true, message: "Summary deleted successfully" };
